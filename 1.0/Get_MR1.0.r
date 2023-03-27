@@ -11,10 +11,10 @@ library(tidyr)
 #library(progress)
 library(data.table)
 library(MRPRESSO)
-#library(parallel)
+library(parallel)
 #library(foreach)
-#library(doParallel)
-#library(pbapply)
+library(doParallel)
+library(pbapply)
 library(stringr)
 library(cause)
 library(vroom)
@@ -38,11 +38,13 @@ format_Mun<-function(file,source="finn_r8",save_path=NULL,lift=F,ref_genome = "h
   library(data.table)
   library(MungeSumstats)
   library(dplyr)
+  if(class(file)!="data.frame"){
   dat<-fread(file)
   if(source=="finn_r8"){
     dat<-dat%>%dplyr::select(SNP=rsids,CHR=`#chrom`,BP=pos,A1=ref,
                              A2=alt,FRQ=af_alt,BETA=beta,
                              SE=sebeta,P=pval)
+  }
   }
   dat<-as.data.frame(dat)
   dat<-format_sumstats(dat,return_data = TRUE)
@@ -166,36 +168,9 @@ format_cyclemr<-function(data,type="exposure",source="finn_r8"){
                       beta_col="beta",se_col = "sebeta",eaf_col = "af_alt",
                       pval_col = "pval",chr_col = "chrom",pos_col = "pos")
   }
-  
-    
-  }
-  
-  
   return(data)
 }
 
-format_cause<-function(dat,type="exposure"){
-  library(cause)
-  
-  if(type=='exposure'){
-    dat<-gwas_format(dat,snp='SNP',beta_hat ='beta.exposure',
-                     se='se.exposure',A1="effect_allele.exposure",
-                     A2="other_allele.exposure",chrom='chr.exposure',
-                     pos="pos.exposure",p_value = 'pval.exposure'
-    )
-  }
-  
-  if(type=='outcome'){
-    dat<-gwas_format(dat,snp='SNP',beta_hat ='beta.outcome',
-                     se='se.outcome',A1="effect_allele.outcome",
-                     A2="other_allele.outcome",chrom='chr.outcome',
-                     pos="pos.outcome",p_value = 'pval.outcome'
-    )
-  }
-  
-  
-  return(dat)
-}
 
 format_trait<-function(list,short=FALSE,short_num="40"){
   for(i in 1:length(list)){
@@ -218,7 +193,7 @@ format_trait<-function(list,short=FALSE,short_num="40"){
 }
 
 # read
-read_vcf_cyclemr<-function(file_name,nThread = 8,type=".gz"){
+read_vcf_getmr<-function(file_name,nThread = 8,type=".gz"){
   name<-file_name
   
   for(i in 1:nrow(name)){
@@ -457,48 +432,87 @@ get_f<-function(dat,F_value=10){
 
 
 # MR
-# cause
-cause_estimate<-function(dat,num_snp=1000000){
-  library(cause)
-  cause_sample<-function(dat,num_snp){
+cause_getmr<-function(expo,outcome,LD_file,r2=0.001,
+                        kb=10000,pval=1e-05,cl=NULL){
+  format_cause_expo<-function(dat){
+    library(cause)
+    dat<-gwas_format(dat,snp='SNP',beta_hat ='beta.exposure',
+                     se='se.exposure',A1="effect_allele.exposure",
+                     A2="other_allele.exposure",chrom='chr.exposure',
+                     pos="pos.exposure",p_value = 'pval.exposure'
+    )
+    return(dat)
+  }
+  format_cause_out<-function(dat){
+    library(cause)
+    dat<-gwas_format(dat,snp='SNP',beta_hat ='beta.outcome',
+                     se='se.outcome',A1="effect_allele.outcome",
+                     A2="other_allele.outcome",chrom='chr.outcome',
+                     pos="pos.outcome",p_value = 'pval.outcome'
+    )
+    return(dat)
+  }
+  sample_cause<-function(dat,num_snp){
     set.seed(123)
     VAR<-with(dat,sample(snp,size=num_snp,replace=FALSE))
     return(VAR)
   }
-  VAR<-pblapply(dat,num_snp,FUN=cause_sample)
+  datap_cause<-function(dat){
+    dat$p1<-pnorm(abs(dat$beta_hat_1/dat$seb1),lower.tail=F)*2
+    return(dat)
+  }
+  dat_clump_cause<-function(dat){
+    for_clump<-data.frame(dat$snp,dat$p1)
+    colnames(for_clump)<-c('rsid','pval')
+    return(for_clump)
+  }
+  datap_cause<-function(dat){
+    dat$p1<-pnorm(abs(dat$beta_hat_1/dat$seb1),lower.tail=F)*2
+    return(dat)
+  }
+  ld_local<-function(dat,r2,kb,p,LD_file){
+    library(plinkbinr)
+    
+    plink_pathway<-get_plink_exe()
+    
+    dat<-ld_clump(dat,clump_r2 = r2,clump_kb = kb,
+                  clump_p = p,
+                  plink_bin =plink_pathway , bfile =LD_file)
+    
+    return(dat)
+  }
+  if("list"%in%class(outcome)){
+    single_expo=T
+    single_outcome=F}
+  if("list"%in%class(expo)){
+    single_outcome=T
+    single_expo=F}
+  if(single_expo==T){
+    outcome<-pblapply(outcome,FUN=format_cause_out,cl=cl)
+    expo<-format_cause_expo(expo)
+  }
+  if(single_outcome==T){
+    expo<-pblapply(expo,FUN=format_cause_expo,cl=cl)
+    outcome<-format_cause_out(outcome)
+  }
   
+  
+  if(single_outcome==T){dat<-pblapply(expo,outcome,FUN=gwas_merge,cl=cl)}
+  if(single_expo==T){dat<-pblapply(outcome,expo,
+                                   FUN=function(outcome,exposure)gwas_merge(exposure,outcome),
+                                   cl=cl)}
+  
+  
+  VAR<-pblapply(dat,1000000,FUN=sample_cause)
   
   est<-foreach(i=1:length(VAR)) %do%{
     library(cause)
     data<-est_cause_params(dat[[i]],VAR[[i]])
   }
-  return(est)
-}
-
-cause_add_pval<-function(dat){
-  
-  cause_pval<-function(dat){
-    dat$p1<-pnorm(abs(dat$beta_hat_1/dat$seb1),lower.tail=F)*2
-    return(dat)
-  }
-  dat<-pblapply(dat,FUN=cause_pval)
-  return(dat)
-}
-
-
-cause_snp<-function(dat){
-  
-  get_snp<-function(dat) {
-    dat<-dat$rsid
-    return(dat)
-  }
-  
-  snp<-lapply(dat,fun=get_snp)
-  
-  return(snp)
-}
-
-mr_cause<-function(dat,estimate,top_variants){
+  dat<-pblapply(dat,FUN=datap_cause)
+  for_clump<-lapply(dat, dat_clump_cause)
+  clumped<-pblapply(for_clump,0.001,10000,1e-05,LD_file,FUN=ld_local)
+  top_vars<-pblapply(clumped,FUN=function(dat) return(dat$rsid))
   cause_res<-list()
   for(i in 1:length(dat)){
     library(cause)
@@ -506,46 +520,60 @@ mr_cause<-function(dat,estimate,top_variants){
     cause_res[[i]]<-res
     print(i)
   }
-  return(cause_res)
+  cause_table<-data.frame()
+  for (i in 1:length(cause_res)){
+    res<-cause_res[[i]]
+    elpd<-res$elpd
+    elpd$p<-pnorm(-elpd$z,lower.tail = F)
+    name<-paste0('file',i)
+    elpd$file<-name
+    cause_table<-rbind(cause_table,elpd)
+  }
+  return(cause_table)
 }
+
 # RAPS
-RAPS<-function(dat,dir_figure){
+RAPS_getmr<-function(dat,dir_figure){
   setwd(dir_figure)
-  res<-mr.raps(dat,over.dispersion = TRUE)
-  exposure<-paste0(dat$exposure,dat$id.exposure)
-  dir_create(exposure)
-  dir_in<-paste0(dir_figure,'/',exposure)
-  setwd(dir_in)
-  #plot_name<-paste0(exposure,'raps.pdf')
-  ggsave(file='raps_plot.pdf',plot=plot(res),width=9,height=5)
-  res<-data.frame(beta.raps=res$beta.hat,se.raps=res$beta.se,
-                  eov=res$tau2.hat,se.eov=res$tau2.se,OR.raps=NA,
-                  or_lci95.raps=NA,or_uci95.raps=NA)
-  res$OR.raps<- exp(res$beta.raps)
-  res$or_lci95.raps<-exp(res$beta.raps)-(res$beta.raps*1.96)
-  res$or_uci95.raps<-exp(res$beta.raps)+(res$beta.raps*1.96)
-  res$pval.raps<-2*pnorm(abs(res$beta.raps/res$se.raps),lower.tail=F) 
-  res$pval.eov<-2*pnorm(abs(res$eov/res$se.eov),lower.tail=F)
-  
-  if(res$pval.eov >0.05 ){
-    res1<-mr.raps(dat,over.dispersion = F)
+  res<-try(mr.raps(dat,over.dispersion = TRUE))
+  if(class(res)%in%"try-error"){}
+  else{
+    exposure<-dat$id.exposure
+    dir_create(exposure)
+    dir_in<-paste0(dir_figure,'/',exposure)
     setwd(dir_in)
     #plot_name<-paste0(exposure,'raps.pdf')
-    ggsave(file='raps_plot.pdf',plot=plot(res1),width=9,height=5)
-    res1<-data.frame(beta.raps=res1$beta.hat,se.raps=res1$beta.se,
-                     eov=NA,se.eov=NA)
-    res1$eov<-res$eov
-    res1$se.eov<-res$se.eov
-    res1$OR.raps<- exp(res1$beta.raps)
-    res1$or_lci95.raps<-exp(res1$beta.raps)-(res1$beta.raps*1.96)
-    res1$or_uci95.raps<-exp(res1$beta.raps)+(res1$beta.raps*1.96)
-    res1$pval.raps<-2*pnorm(abs(res1$beta.raps/res1$se.raps),lower.tail=F) 
-    res1$pval.eov<-2*pnorm(abs(res1$eov/res1$se.eov),lower.tail=F)
+    ggsave(file='raps_plot.pdf',plot=plot(res),width=9,height=5)
+    res<-data.frame(beta.raps=res$beta.hat,se.raps=res$beta.se,
+                    eov=res$tau2.hat,se.eov=res$tau2.se,OR.raps=NA,
+                    or_lci95.raps=NA,or_uci95.raps=NA)
+    res$OR.raps<- exp(res$beta.raps)
+    res$or_lci95.raps<-exp(res$beta.raps)-(res$beta.raps*1.96)
+    res$or_uci95.raps<-exp(res$beta.raps)+(res$beta.raps*1.96)
+    res$pval.raps<-2*pnorm(abs(res$beta.raps/res$se.raps),lower.tail=F) 
+    res$pval.eov<-2*pnorm(abs(res$eov/res$se.eov),lower.tail=F)
+    if(is.na(res$pval.eov)==FALSE){
+      if(res$pval.eov >0.05 ){
+        res1<-mr.raps(dat,over.dispersion = F)
+        setwd(dir_in)
+        #plot_name<-paste0(exposure,'raps.pdf')
+        ggsave(file='raps_plot.pdf',plot=plot(res1),width=9,height=5)
+        res1<-data.frame(beta.raps=res1$beta.hat,se.raps=res1$beta.se,
+                         eov=NA,se.eov=NA)
+        res1$eov<-res$eov
+        res1$se.eov<-res$se.eov
+        res1$OR.raps<- exp(res1$beta.raps)
+        res1$or_lci95.raps<-exp(res1$beta.raps)-(res1$beta.raps*1.96)
+        res1$or_uci95.raps<-exp(res1$beta.raps)+(res1$beta.raps*1.96)
+        res1$pval.raps<-2*pnorm(abs(res1$beta.raps/res1$se.raps),lower.tail=F) 
+        res1$pval.eov<-2*pnorm(abs(res1$eov/res1$se.eov),lower.tail=F)
+        
+        res<-res1
+      }
+    }
     
-    res<-res1
+    return(res)
   }
-  
-  return(res)
 }
 
 mr_dircreate_base<-function(root_dir,project_name,date=NULL){  
@@ -708,14 +736,6 @@ clean_list<-function(list,nrow=10){
   n<-subset(n,row>nrow)
   list<-list[n$l]
   return(list)
-}
-
-clean_outcome_from_exposure<-function(expo,outcome){
-  snp<-lapply(expo,FUN=function(x)data.frame(SNP=x$SNP))
-  snp<-bind_rows(snp)
-  snp<-data.frame(SNP=unique(snp$SNP))
-  outcome_adj<-merge(outcome,snp)
-  return(outcome_adj)
 }
 
 clean_IV_from_outsig<-function(dat,MR_reverse=1e-03){

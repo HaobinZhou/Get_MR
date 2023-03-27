@@ -1,6 +1,6 @@
 # Get_MR1.0 帮助文档
 
-* 代码作者：广州医科大学 第一临床学院 周浩彬、谢治鑫
+* 代码作者：广州医科大学 第一临床学院 周浩彬、 第二临床学院谢治鑫
 
 * 帮助文档作者： 周浩彬
 * 时间：2023/3/27
@@ -8,7 +8,11 @@
 * 开源许可证：GPL3.0
 * 公众号： GetScience
 
-* 致谢：感谢广州医科大学 第六临床学院黄覃耀和 南山班学院 林子凯在孟德尔随机化概念，代码思路等提供的重要的建设性建议。
+* 致谢：感谢广州医科大学 第六临床学院 黄覃耀和 南山学院 林子凯在孟德尔随机化概念，代码思路等提供的重要的建设性建议。
+
+
+
+**微信公众号排版限制，略乱，建议想详细阅读的小伙伴下载PDF进行阅读**：[Get_MR/Get_MR1.0 help.pdf at main · HaobinZhou/Get_MR (github.com)](https://github.com/HaobinZhou/Get_MR/blob/main/Get_MR1.0 help.pdf)
 
 
 
@@ -18,36 +22,24 @@
 
 2. **输入clump文件路径后总是报错**：
 
-   ```R
-   #尤其注意这个文件名的书写，因为他们是二进制文件，不需要写后缀！只需要选取对应的人种即可，比如欧洲人：
+3. **第一次使用如何安装关联R包：**[Get_MR/1.0 at main · HaobinZhou/Get_MR (github.com)](https://github.com/HaobinZhou/Get_MR/tree/main/1.0) 
+
+   1. 如果不需要使用`MungeSumstats`包（相关函数包括：`format_Mun`，`get_chr_pos`，`format_getmr`中`source="ukb_nosnp"`) ，则只需要运行[Get_MR1.0dependence.R](https://github.com/HaobinZhou/Get_MR/blob/main/1.0/Get_MR1.0dependence.R)
+   2. 如果需要使用`MungeSumstats`包，则还需运行[Install_Reference_Genome.r](https://github.com/HaobinZhou/Get_MR/blob/main/1.0/Install_Reference_Genome.r) 这个包括了hg19和hg38的基因组参考文件，总大小达到了5G！**如果直接安装失败，在GetScience公众号可获取已经下载好的R包文件，并本地安装**（推荐）
+
+4. **Bug反馈**：代码仅由两人编写，难免出现错误。欢迎提交bug到GetScience公众号后台！
+
+5. **感谢所有Get_MR使用的R包作者**，是因为他们我们才得以轻松实现这么多复杂的功能。他们都是开源的，因此我们承诺Get_MR将**永久免费开源**。这意味着使用者可以随意地修改，分发代码，但前提是遵守：
+
+   **1.本代码不得用于任何商业或盈利目的**
+
+   **2.未经代码作者的同意，本代码不得用于任何形式的销售或商业交易**
+
+   **3.本代码可以在非商业性的科研、学术研究和个人使用的情况下免费使用**
+
+   **4.在使用本代码并重新打包并向公众发放时，请引用我们的公众号原文**
+
    
-   LD_file="S:/GWAS数据/本地LD依赖文件/EUR"
-   
-   ## 这个问题我回答好多遍啦！
-   ```
-
-   ![image-20230327163853134](A:\OneDrive\GET\assets\image-20230327163853134.png)
-
-   3. **第一次使用如何安装关联R包：**[Get_MR/1.0 at main · HaobinZhou/Get_MR (github.com)](https://github.com/HaobinZhou/Get_MR/tree/main/1.0)
-
-      1. 如果不需要使用`MungeSumstats`包（相关函数包括：`format_Mun`，`get_chr_pos`，`format_getmr`中`source="ukb_nosnp"`) ，则只需要运行[Get_MR1.0dependence.R](https://github.com/HaobinZhou/Get_MR/blob/main/1.0/Get_MR1.0dependence.R)
-      2. 如果需要使用`MungeSumstats`包，则还需运行[Install_Reference_Genome.r](https://github.com/HaobinZhou/Get_MR/blob/main/1.0/Install_Reference_Genome.r) 这个包括了hg19和hg38的基因组参考文件，总大小达到了5G！**如果直接安装失败，在GetScience公众号可获取已经下载好的R包文件，并本地安装**（推荐）
-
-   4. **Bug反馈**：代码仅由两人编写，难免出现错误。欢迎提交bug到GetScience公众号后台！
-
-   5. **如果觉得好用，可以点一下github项目上的小星星吗，这是我们继续开源的最大动力，谢谢！**
-
-   6. **感谢所有Get_MR使用的R包作者**，是因为他们我们才得以轻松实现这么多复杂的功能。他们都是开源的，因此我们承诺Get_MR将**永久免费开源**。这意味着使用者可以随意地修改，分发代码，但前提是遵守：
-
-      **1.本代码不得用于任何商业或盈利目的**
-
-      **2.未经代码作者的同意，本代码不得用于任何形式的销售或商业交易**
-
-      **3.本代码可以在非商业性的科研、学术研究和个人使用的情况下免费使用**
-
-      **4.在使用本代码并重新打包并向公众发放时，请引用我们的公众号原文**
-
-      
 
 ## 目录
 
@@ -73,8 +65,8 @@ LDSC_rg(expo, outcome, an, sample_prev = NA, population_prev = NA,
 - `an`: 它是一个字符串，表示您使用的人群祖先。例如，如果您的数据来自欧洲人口，则应设置为 `"eur"`.
 - `sample_prev`: 遗传暴露指标的样本流行病学先验患病率。默认为 `NA`。
 - `population_prev`: 遗传暴露指标的人群流行病学先验患病率。默认为 `NA`。
-- `ld`: 包含所有SNP的LD矩阵，可以使用 `snpStats` 包中的 `read.plink` 函数从PLINK二进制文件中读取。请参阅 `snpStats::read.plink` 以获取更多详细信息。
-- `wld`: 一个矩阵，其中每个元素表示SNP对之间的加权LD分数。可以使用 `ldsc::est_weights` 函数从LD矩阵中计算。请参阅 `ldsc::est_weights` 以获取更多详细信息。
+- `ld`: 本地LD依赖文件
+- `wld`: 本地weighted LD 依赖文件
 - `chr_filter`: 一个整数向量，用于指定要使用的染色体。默认为包含1-22的整数向量。
 - `n_blocks`: 用于计算加权LD矩阵的块数。默认为200。
 

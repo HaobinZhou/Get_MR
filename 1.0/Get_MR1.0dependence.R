@@ -1,3 +1,4 @@
+## 保证你的R版本是4.2及以上！！
 install.packages("devtools")
 if (!require("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
@@ -9,4 +10,4 @@ devtools::install_github("jean997/cause")
 BiocManager::install("MungeSumstats")
 devtools::install_github("n-mounier/MRlap")
 devtools::install_github("mglev1n/ldscr")
-install.packages(c('dplyr','tidyr','data.table','stringr','vroom','mr.raps'))
+install.packages(c('dplyr','tidyr','data.table','stringr','vroom','mr.raps','pbapply','doParallel'))

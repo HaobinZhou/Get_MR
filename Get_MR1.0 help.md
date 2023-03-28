@@ -1,31 +1,52 @@
-# Get_MR1.0 帮助文档
+# Get_MR1.0
 
-* 代码作者：广州医科大学 第一临床学院 周浩彬、 第二临床学院谢治鑫
+## 1. 写在前面：
 
-* 帮助文档作者： 周浩彬
-* 时间：2023/3/27
-* 适配版本: Get_MR1.0
-* 开源许可证：GPL3.0
-* 公众号： GetScience
+### 1.1 项目地址
 
-* 致谢：感谢广州医科大学 第六临床学院 黄覃耀和 南山学院 林子凯在孟德尔随机化概念，代码思路等提供的重要的建设性建议。
+**github：**[HaobinZhou/Get_MR: A package for running MR In batches and in parallel quickly (github.com)](https://github.com/HaobinZhou/Get_MR)
+
+**如果觉得好用，可以点一下github项目上的小星星吗，这是我们继续开源的最大动力，谢谢！**
 
 
 
-**微信公众号排版限制，略乱，建议想详细阅读的小伙伴下载PDF进行阅读**：[Get_MR/Get_MR1.0 help.pdf at main · HaobinZhou/Get_MR (github.com)](https://github.com/HaobinZhou/Get_MR/blob/main/Get_MR1.0 help.pdf)
+
+
+### 1.2 R包使用方法： 
+
+**R包以R脚本的形式提供，打开R包，全选运行，即得到所有function**
+
+1. 进入github[HaobinZhou/Get_MR: A package for running MR In batches and in parallel quickly (github.com)](https://github.com/HaobinZhou/Get_MR)，下载代码zip
+
+2. ```R
+   source("./Get_MR1.0.r") ## 填文件所在地址
+   
+   ## 或者直接打开R文件，全选代码运行也可以！
+   ```
+
+   
 
 
 
-## 常见问题：
+### 1.3 常见问题：
 
-1. **本地clump，1000G处理好的MAF文件，MRlap依赖文件如何获取**： GetScience公众号可免费获取已处理好文件。源文件请查看本文相应function介绍处
+1. **本地clump，1000G处理好的MAF文件，MRlap依赖文件如何获取**： GetScience公众号可免费获取已处理好文件，回复"依赖文件"即得链接。源文件请查看本文相应function介绍处
 
 2. **输入clump文件路径后总是报错**：
+
+   ```R
+   #尤其注意这个文件名的书写，因为他们是二进制文件，不需要写后缀！只需要选取对应的人种即可，比如欧洲人：
+   LD_file="S:/GWAS数据/本地LD依赖文件/EUR"
+   
+   ## 这个问题我回答好多遍啦！
+   ```
+
+   
 
 3. **第一次使用如何安装关联R包：**[Get_MR/1.0 at main · HaobinZhou/Get_MR (github.com)](https://github.com/HaobinZhou/Get_MR/tree/main/1.0) 
 
    1. 如果不需要使用`MungeSumstats`包（相关函数包括：`format_Mun`，`get_chr_pos`，`format_getmr`中`source="ukb_nosnp"`) ，则只需要运行[Get_MR1.0dependence.R](https://github.com/HaobinZhou/Get_MR/blob/main/1.0/Get_MR1.0dependence.R)
-   2. 如果需要使用`MungeSumstats`包，则还需运行[Install_Reference_Genome.r](https://github.com/HaobinZhou/Get_MR/blob/main/1.0/Install_Reference_Genome.r) 这个包括了hg19和hg38的基因组参考文件，总大小达到了5G！**如果直接安装失败，在GetScience公众号可获取已经下载好的R包文件，并本地安装**（推荐）
+   2. 如果需要使用`MungeSumstats`包，则还需运行[Install_Reference_Genome.r](https://github.com/HaobinZhou/Get_MR/blob/main/1.0/Install_Reference_Genome.r) 这个包括了hg19和hg38的基因组参考文件，总大小达到了5G！**如果直接安装失败，在GetScience公众号回复"基因组参考"可得下载链接，并本地安装**（推荐）
 
 4. **Bug反馈**：代码仅由两人编写，难免出现错误。欢迎提交bug到GetScience公众号后台！
 
@@ -41,7 +62,7 @@
 
    
 
-## 目录
+## 2. 帮助文档目录
 
 [TOC]
 
@@ -80,7 +101,7 @@ LDSC_rg(expo, outcome, an, sample_prev = NA, population_prev = NA,
 
 ### 示例
 
-**具体用法参照：mr_lap和LDSC_rg示例.r** 可通过公众号GetScience获取文件
+**具体用法参照：mr_lap和LDSC_rg示例.r** 可通过公众号GetScience回复示例获取文件
 
 
 
@@ -120,7 +141,7 @@ mr_lap(expo, outcome, ld, hm3, pval, r2, kb, MR_reverse = 1e-03, save_logfiles =
 
 ### 用法
 
-**具体用法参照：mr_lap和LDSC_rg示例.r** 可通过公众号GetScience获取文件
+**具体用法参照：mr_lap和LDSC_rg示例.r** 可通过公众号GetScience回复示例获取文件
 
 
 
@@ -128,7 +149,7 @@ mr_lap(expo, outcome, ld, hm3, pval, r2, kb, MR_reverse = 1e-03, save_logfiles =
 
 ### 描述
 
-`cause_cyclemr`函数一键式执行cause。可批量化执行多暴露对一结局或一暴露对多结局
+一键式执行cause。可批量化执行多暴露对一结局或一暴露对多结局
 
 ### 用法
 
@@ -765,4 +786,16 @@ clean_IV_from_outsig(dat, MR_reverse = 1e-03)
 一个数据框，其中包含P值大于 `MR_reverse` 值的IV（也就是反向不显著的IVs）。
 
 
+
+## 作者信息
+
+* 代码作者：广州医科大学 第一临床学院 周浩彬     第二临床学院 谢治鑫
+
+* 帮助文档作者： 周浩彬
+* 时间：2023/3/27
+* 适配版本: Get_MR1.0
+* 开源许可证：GPL3.0
+* 公众号： GetScience
+
+* 致谢：感谢广州医科大学 第六临床学院 黄覃耀和 南山学院 林子凯在孟德尔随机化概念，代码思路等提供的重要的建设性建议。
 

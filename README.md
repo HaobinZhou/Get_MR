@@ -64,9 +64,11 @@ A package for running MR In batches and in parallel quickly
 
    
 
+## 2. 帮助文档目录
 
+[TOC]
 
-# 进阶MR分析
+#进阶MR分析
 
 ## LDSC_rg
 
@@ -83,7 +85,7 @@ LDSC_rg(expo, outcome, an, sample_prev = NA, population_prev = NA,
 
 - `expo`: 一个数据框，其中包含一个遗传暴露指标的多个SNP和它们与结果变量的rg。
 - `outcome`: 一个数据框，其中包含一个结果变量的多个SNP和它们与遗传暴露指标的rg。
-- `an`: 它是一个字符串，表示您使用的人群祖先。例如，如果您的数据来自欧洲人口，则应设置为 `"eur"`.
+- `an`: 它是一个字符串,目前还没有作用（因为我们提供的依赖文件只有eur的，其他人种还没更新）
 - `sample_prev`: 遗传暴露指标的样本流行病学先验患病率。默认为 `NA`。
 - `population_prev`: 遗传暴露指标的人群流行病学先验患病率。默认为 `NA`。
 - `ld`: 本地LD依赖文件
@@ -155,11 +157,11 @@ mr_lap(expo, outcome, ld, hm3, pval, r2, kb, MR_reverse = 1e-03, save_logfiles =
 
 ```R
 ## 不并行化运行
-cause_cyclemr(expo, outcome, LD_file, r2 = 0.001, kb = 10000, pval = 1e-05)
+cause_getmr(expo, outcome, LD_file, r2 = 0.001, kb = 10000, pval = 1e-05)
 
 ## 并行化运行
 cl<-makeCluster(2) ## 填你想要的并行化的核数，核数越多，需要的运行内存越大
-cause_cyclemr(expo, outcome, LD_file, r2 = 0.001, kb = 10000, pval = 1e-05,cl=cl)
+cause_getmr(expo, outcome, LD_file, r2 = 0.001, kb = 10000, pval = 1e-05,cl=cl)
 ```
 
 ### 参数
@@ -174,7 +176,7 @@ id<-c('a.gz','b.gz','c.gz')
 expo<-lapply(id,FUN=fread)
 outcome<-fread("outcome.gz")
 cl=makeCluster(4)## 内存不够的也可以不并行化运行
-res<-cause_cyclemr(expo, outcome, LD_file, r2 = 0.001, kb = 10000, pval = 1e-05,cl=cl)
+res<-cause_getmr(expo, outcome, LD_file, r2 = 0.001, kb = 10000, pval = 1e-05,cl=cl)
 stopCluster(cl)
 ## 这样返回的结果就是3个暴露分别对一个结局的cause结果。
 ```
@@ -212,7 +214,7 @@ expo<-fread('a.gz')
 outcome<-fread('b.gz')
 expo<-format_data(...)
 outcome<-format_data(...)  ## format_data是TwoSampleMR包的函数，格式化。
-expo<-pblapply(expo,kb=10000,r2=0.001,LD_file=LD_file,FUN=clean_expo) ## 数据很大，建议本地clump，在线很容易报错
+expo<-pblapply(expo,pval=1,kb=10000,r2=0.001,LD_file=LD_file,FUN=clean_expo) ## 数据很大，建议本地clump，在线很容易报错
 dat<-harmonise(expo,outcome)
 res<-RAPS_getmr(dat, dir_figure)
 ```
@@ -391,7 +393,7 @@ format_Mun(my_sumstats_df, save_path = "~/formatted_sumstats", lift = T, ref_gen
 ### 用法
 
 ```
-format_cyclemr(data, type = "exposure", source = "finn_r8")
+format_getmr(data, type = "exposure", source = "finn_r8")
 ```
 
 ### 参数
@@ -412,7 +414,7 @@ format_cyclemr(data, type = "exposure", source = "finn_r8")
 
 ```R
 my_data <- fread("my_data.gz")
-format_cyclemr(my_data, type = "finn_r8", source = "Mun")
+format_getmr(my_data, type = "finn_r8", source = "Mun")
 ```
 
 ### 返回值
@@ -467,7 +469,7 @@ format_trait(my_list, short = TRUE, short_num = "20")
 ### 用法
 
 ```
-read_vcf_cyclemr(file_name, nThread = 8, type = ".gz")
+read_vcf_getmr(file_name, nThread = 8, type = ".gz")
 ```
 
 ### 参数
@@ -480,7 +482,7 @@ read_vcf_cyclemr(file_name, nThread = 8, type = ".gz")
 
 ```R
 my_file <- "my_file.vcf"
-read_vcf_cyclemr(my_file, nThread = 4, type = ".gz")
+read_vcf_getmr(my_file, nThread = 4, type = ".gz")
 ```
 
 ### 返回值
@@ -798,4 +800,5 @@ clean_IV_from_outsig(dat, MR_reverse = 1e-03)
 * 公众号： GetScience
 
 * 致谢：感谢广州医科大学 第六临床学院 黄覃耀和 南山学院 林子凯在孟德尔随机化概念，代码思路等提供的重要的建设性建议。
+
 

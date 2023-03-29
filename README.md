@@ -1,5 +1,9 @@
 # Get_MR
 A package for running MR In batches and in parallel quickly
+
+# 更新！ 3.29
+get_eaf_from_1000G 的示例代码有误，已修正！
+
 # Get_MR1.0
 
 ## 1. 写在前面：
@@ -538,7 +542,7 @@ get_eaf_from_1000G(dat, path, type = "exposure")
 ### 参数
 
 - `dat`：一个数据框，为TwoSampleMR包格式的数据
-- `path`：一个字符串，表示包含1000G MAF文件的目录路径。
+- `path`：一个字符串，表示包含1000G MAF文件`fileFrequency.frq`的目录路径。
 - `type`：一个字符串，表示数据是“exposure”（暴露因素）还是“outcome”（结果），默认为“exposure”。
 
 ### 值
@@ -560,7 +564,7 @@ get_eaf_from_1000G(dat, path, type = "exposure")
 以下是使用该函数的示例：
 
 ```R
-dat <- get_eaf_from_1000G(dat, "S:/GWAS数据/本地LD依赖文件/fileFrequency.frq", type = "exposure")
+dat <- get_eaf_from_1000G(dat, "S:/GWAS数据/本地LD依赖文件", type = "exposure")
 
 # 检查输出
 head(dat)
@@ -800,5 +804,4 @@ clean_IV_from_outsig(dat, MR_reverse = 1e-03)
 * 公众号： GetScience
 
 * 致谢：感谢广州医科大学 第六临床学院 黄覃耀和 南山学院 林子凯在孟德尔随机化概念，代码思路等提供的重要的建设性建议。
-
 

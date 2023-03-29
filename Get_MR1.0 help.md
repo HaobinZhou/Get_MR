@@ -536,7 +536,7 @@ get_eaf_from_1000G(dat, path, type = "exposure")
 ### 参数
 
 - `dat`：一个数据框，为TwoSampleMR包格式的数据
-- `path`：一个字符串，表示包含1000G MAF文件的目录路径。
+- `path`：一个字符串，表示包含1000G MAF文件`fileFrequency.frq`的目录路径。
 - `type`：一个字符串，表示数据是“exposure”（暴露因素）还是“outcome”（结果），默认为“exposure”。
 
 ### 值
@@ -558,7 +558,7 @@ get_eaf_from_1000G(dat, path, type = "exposure")
 以下是使用该函数的示例：
 
 ```R
-dat <- get_eaf_from_1000G(dat, "S:/GWAS数据/本地LD依赖文件/fileFrequency.frq", type = "exposure")
+dat <- get_eaf_from_1000G(dat, "S:/GWAS数据/本地LD依赖文件", type = "exposure")
 
 # 检查输出
 head(dat)

@@ -74,9 +74,9 @@ A package for running MR In batches and in parallel quickly
 
 ## 2. 帮助文档目录
 
-[TOC]
 
-#进阶MR分析
+
+# 进阶MR分析
 
 ## LDSC_rg
 

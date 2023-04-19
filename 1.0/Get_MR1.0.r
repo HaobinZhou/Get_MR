@@ -640,7 +640,7 @@ mr_presso_snp<-function(mr_presso_res,mr_presso_main,dat,type="list"){
       main<-mr_presso_main[[i]]
       data<-dat[[i]]
       try(if(is.na(main[2,6])==FALSE){
-        outliers<-which(res$`MR-PRESSO results`$`Outlier Test`$Pvalue<0.05)
+        outliers<-which(res$`Outlier Test`$Pvalue<0.05)
         data$mr_keep[outliers]<-FALSE
       })
       data_re[[i]]<-data
@@ -654,7 +654,7 @@ mr_presso_snp<-function(mr_presso_res,mr_presso_main,dat,type="list"){
     main<-mr_presso_main
     data<-dat
     try(if(is.na(main[2,6])==FALSE){
-      outliers<-which(res$`MR-PRESSO results`$`Outlier Test`$Pvalue<0.05)
+      outliers<-which(res$`Outlier Test`$Pvalue<0.05)
       data$mr_keep[outliers]<-FALSE
     })
     return(data)

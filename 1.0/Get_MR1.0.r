@@ -618,8 +618,6 @@ mr_Presso<-function(dat,num=10000){
   library(TwoSampleMR)
   library(MRPRESSO)
   library(dplyr)
-  
-  dat<-subset(dat,mr_keep==T)
   set.seed(123)
   try (mr_presso_res<-mr_presso(BetaOutcome ="beta.outcome", BetaExposure = "beta.exposure", SdOutcome ="se.outcome", SdExposure = "se.exposure", 
                                 OUTLIERtest = TRUE,DISTORTIONtest = TRUE, data = dat,  

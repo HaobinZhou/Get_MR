@@ -62,7 +62,7 @@ format_Mun<-function(file,source="finn_r8",save_path=NULL,lift=F,ref_genome = "h
   gc()
 }
 
-format_cyclemr<-function(data,type="exposure",source="finn_r8"){
+format_getmr<-function(data,type="exposure",source="finn_r8"){
   library(TwoSampleMR)
   library(MungeSumstats)
   

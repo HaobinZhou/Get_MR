@@ -619,7 +619,7 @@ mr_Presso<-function(dat,num=10000){
   library(MRPRESSO)
   library(dplyr)
   
-  nsnp_filter=6
+  dat<-subset(dat,mr_keep==T)
   set.seed(123)
   try (mr_presso_res<-mr_presso(BetaOutcome ="beta.outcome", BetaExposure = "beta.exposure", SdOutcome ="se.outcome", SdExposure = "se.exposure", 
                                 OUTLIERtest = TRUE,DISTORTIONtest = TRUE, data = dat,  

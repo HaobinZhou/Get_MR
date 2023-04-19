@@ -11,7 +11,7 @@ A package for running MR In batches and in parallel quickly
 # Get_MR1.0
 
 ## 近期更改与提示：
-**4.19**：注意TwoSampleMR包有一列是mr_keep。请在运行我们get_mr包的所有分析函数前，如果需要使用TwoSampleMR包的数据，请将mr_keep状态为false的删掉，因为带有未通过质控的SNP，可能会带来未知的错误！可以参考以下代码
+**4.19**：注意TwoSampleMR包有一列是mr_keep。请在运行我们get_mr包的所有分析函数前，如果需要使用TwoSampleMR包格式的数据，请将mr_keep状态为false的删掉（如果是没有harmonise之前，列名为mr_keep.exposure/mr_keep.outcome）。因为带有未通过质控的SNP，可能会带来未知的错误！可以参考以下代码
  ```R
    
    dat<-harmonise_data(exposure,outcome)  

@@ -636,7 +636,7 @@ mr_presso_snp<-function(mr_presso_res,mr_presso_main,dat,type="list"){
   data_re<-list()
   if(type=="list"){
     for(i in 1:length(mr_presso_res)){
-      res<-mr_presso_res[[i]]
+      res<-mr_presso_res$`MR-PRESSO results`[[i]]
       main<-mr_presso_main[[i]]
       data<-dat[[i]]
       try(if(is.na(main[2,6])==FALSE){

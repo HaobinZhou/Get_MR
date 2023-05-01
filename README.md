@@ -19,7 +19,7 @@ A package for running MR In batches and in parallel quickly
 
 
 
-**公众号回复：“示例”即得示例代码**
+**公众号回复：“示例”即得示例代码** (不会还没关注我们公众号吧#doge，GetScience, 等你来！)
 
 
 

@@ -121,6 +121,118 @@ clean_GWAS<-function(list,clean=c("bbj","eqtl")){
 
 
 cyclemr<-function(dat,cl_num,type="list"){
+  # base mr
+  mr_base<-function(dat){
+    library(TwoSampleMR)
+    library(dplyr)
+    try(mr<-mr(dat) )
+    try(mr<-dplyr::select(mr,id.exposure,id.outcome,method,nsnp,b,se,pval)) 
+    try(mr_OR<-generate_odds_ratios(mr_res = mr(dat)))
+    try(mr_OR<-dplyr::select(mr_OR,id.exposure,id.outcome,method,nsnp,b,se,pval,lo_ci,up_ci,or, or_lci95,or_uci95))
+    try(mr_OR<-dplyr::rename(mr_OR,b.OR="b",se.OR="se",pval.OR="pval"))
+    try( mr_p_OR<-merge(mr,mr_OR))
+    try(return(mr_p_OR))
+  }
+  
+  mr_egger<-function(dat){
+    library(TwoSampleMR)
+    library(dplyr)
+    mr_egger<-mr_pleiotropy_test(dat) 
+    try( mr_egger<-dplyr::select(mr_egger,id.exposure,id.outcome,egger_intercept,se,pval))
+    try( mr_egger<-dplyr::rename(mr_egger,se.egger="se",pval.egger="pval"))
+    try( mr_egger[2:5,]<-NA) 
+    try( return(mr_egger))
+  }
+  
+  mr_test<-function(dat){
+    library(TwoSampleMR)
+    library(dplyr)
+    mr_heterogeneity<-mr_heterogeneity(dat)
+    try (mr_heterogeneity<-dplyr::select(mr_heterogeneity,id.exposure,id.outcome,method,Q, Q_df,Q_pval))
+    try( mr_heterogeneity<-dplyr::rename(mr_heterogeneity,method.he="method"))
+    try (mr_heterogeneity[3:5,]<-NA )
+    try( return(mr_heterogeneity))
+  }
+  
+  # presso
+  cycle_presso<-function(dat){
+    library(TwoSampleMR)
+    library(MRPRESSO)
+    library(dplyr) 
+    nsnp_filter=6
+    try (mr_presso_res<-mr_presso(BetaOutcome ="beta.outcome", BetaExposure = "beta.exposure", SdOutcome ="se.outcome", SdExposure = "se.exposure", 
+                                  OUTLIERtest = TRUE,DISTORTIONtest = TRUE, data = dat,  
+                                  SignifThreshold = 0.05))
+    try ( mr_presso_main<-mr_presso_res$`Main MR results`)
+    try(mr_presso_main)
+    try ( mr_presso_main[3:5,]<-NA)
+    try(  return(mr_presso_main))
+  }
+  
+  mr_Presso<-function(dat,num=10000){
+    library(TwoSampleMR)
+    library(MRPRESSO)
+    library(dplyr)
+    
+    nsnp_filter=6
+    set.seed(123)
+    try (mr_presso_res<-mr_presso(BetaOutcome ="beta.outcome", BetaExposure = "beta.exposure", SdOutcome ="se.outcome", SdExposure = "se.exposure", 
+                                  OUTLIERtest = TRUE,DISTORTIONtest = TRUE, data = dat,  
+                                  SignifThreshold = 0.05,NbDistribution = num))
+    return(mr_presso_res)
+    
+  }
+  mr_presso_pval<-function(mr_presso_res){ 
+    try ( mr_presso_main<-mr_presso_res$`Main MR results`)
+    try ( mr_presso_main[3:5,]<-NA) 
+    return(mr_presso_main)
+  }
+  
+  
+  mr_presso_snp<-function(mr_presso_res,mr_presso_main,dat,type="list"){
+    data_re<-list()
+    if(type=="list"){
+      for(i in 1:length(mr_presso_res)){
+        res<-mr_presso_res$`MR-PRESSO results`[[i]]
+        main<-mr_presso_main[[i]]
+        data<-dat[[i]]
+        try(if(is.na(main[2,6])==FALSE){
+          outliers<-which(res$`Outlier Test`$Pvalue<0.05)
+          data$mr_keep[outliers]<-FALSE
+        })
+        data_re[[i]]<-data
+        names(data_re)[[i]]<-names(dat)[[i]]
+      }
+      return(data_re)
+    }
+    
+    if(type=="data"){
+      res<-mr_presso_res$`MR-PRESSO results`
+      main<-mr_presso_main
+      data<-dat
+      try(if(is.na(main[2,6])==FALSE){
+        outliers<-which(res$`Outlier Test`$Pvalue<0.05)
+        data$mr_keep[outliers]<-FALSE
+      })
+      return(data)
+    }
+  }
+  bind_basemr<-function(base.res,egger.res,test.res){
+    res_all<-data.frame()
+    for(i in 1:nrow(base.res)){
+      if(i%%5==1){
+        id<-base.res$id.exposure[i]
+        num.bg<-which(egger.res$id.exposure==id)
+        num.end<-num.bg+4
+        res<-cbind(base.res[i:(i+4),],egger.res[num.bg:num.end,3:5])
+        num.bg<-which(test.res$id.exposure==id)[1]
+        num.end<-num.bg+4
+        res<-cbind(res,test.res[num.bg:num.end,3:6])
+        res_all<-rbind(res_all,res)
+      }
+    }
+    return(res_all)
+  }
   
   if(type=="list"){
     cl <- makeCluster(cl_num) 

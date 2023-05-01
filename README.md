@@ -11,7 +11,7 @@ A package for running MR In batches and in parallel quickly
 
 ### 写在前面
 
-**欢迎来到向量化与并行化的世界！**本次更新就一个重大功能，就是并行化运行mr分析，以最优的效率批量跑大量的数据。家用电脑较新服务器基本可以实现2小时批量运行10000个因素，如果你有高性能服务器，恭喜你，30分钟以内就能跑完。
+**欢迎来到向量化与并行化的世界** 本次更新就一个重大功能，就是并行化运行mr分析，以最优的效率批量跑大量的数据。家用电脑较新服务器基本可以实现2小时批量运行10000个因素，如果你有高性能服务器，恭喜你，30分钟以内就能跑完。
 
 
 
@@ -27,7 +27,7 @@ A package for running MR In batches and in parallel quickly
 
 ###  描述
 
-这个函数是用于执行循环Mendelian Randomization (CycleMR) 分析的功能函数，可以在R语言中使用。该函数可以将数据分配到多个计算节点中运行，提高MR分析的效率。
+这个函数是用于执行循mr 分析的功能函数，可以在R语言中使用。该函数可以将数据分配到多个计算节点中运行，提高MR分析的效率。
 
 ### 用法
 
@@ -45,8 +45,6 @@ mr_results <- cyclemr(dat = data, cl_num = 4, type = "list")
 - `type`: MR分析数据类型，可以是"list"或"data"，默认为"list"。主要使用情况也是list
 
 > 注： 如何判断自己的电脑能开启的最大线程数？
->
-> ![image-20230501190452753](A:\OneDrive\GET\get_mr\assets\image-20230501190452753.png)
 >
 > 在任务管理器可看到
 >

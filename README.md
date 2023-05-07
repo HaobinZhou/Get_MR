@@ -10,7 +10,7 @@ A package for running MR In batches and in parallel quickly
 # Get_MR2.0
 
 ## 更新说明
-5.7 ： 
+### 5.7 ： 
 1. 修复cyclemr函数中clean函数bug
 2. 补充说明，get_outcome函数修改了TwoSampleMR包原函数的默认值，将maf阈值调整为0.4，并不获取proxy（默认值为0.3与获取proxy）。由于这个函数主要是为了方便批量预实验（添加了错误防停止运行机制），因此建议正式做数据采用官方函数。
 
@@ -146,6 +146,8 @@ Error in curl::curl_fetch_memory(url, handle = handle) :
 
 
 ##  get_exposure 和 get_outcome
+
+### get_outcome有特殊说明，见**更新说明**
 
 ###  描述
 

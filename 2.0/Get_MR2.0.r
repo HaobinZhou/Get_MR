@@ -137,6 +137,21 @@ clean_GWAS<-function(list,clean=c("bbj","eqtl")){
 
 
 cyclemr<-function(dat,cl_num,type="list"){
+clean<-function(list,clean_0=FALSE){
+  
+  l<-pblapply(list,class)
+  ll<-c()
+  for(i in 1:length(l)){
+    if(l[[i]][1]%in% "try-error"){}
+    else{ll<-c(ll,i)}
+  }
+  list<-list[ll]
+  
+  if(clean_0==TRUE){
+    list<-Filter(function(x) nrow(x)!=0, list)
+  }
+  return(list)
+}
   # base mr
   mr_base<-function(dat){
     library(TwoSampleMR)

@@ -24,6 +24,22 @@ mcl<-makeCluster
 
 ## 2.0更新内容
 
+clean<-function(list,clean_0=FALSE){
+  
+  l<-pblapply(list,class)
+  ll<-c()
+  for(i in 1:length(l)){
+    if(l[[i]][1]%in% "try-error"){}
+    else{ll<-c(ll,i)}
+  }
+  list<-list[ll]
+  
+  if(clean_0==TRUE){
+    list<-Filter(function(x) nrow(x)!=0, list)
+  }
+  return(list)
+}
+
 get_rsid<-function(chr,pos,version='hg38'){
   library(biomaRt)
   dat<-data.frame(CHR=chr,start=pos,end=pos)

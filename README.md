@@ -1,11 +1,9 @@
 # Get_MR
-A package for running MR In batches and in parallel quickly
 
-## 停止更新说明
-由于个人课题安排，时间紧张以及盗版猖獗等原因，get_mr暂时停止更新
+## 更新说明
 已失效的网盘链接已重新更新如下：https://pan.baidu.com/s/1yyYA4cVHKnyCce9YSPRA9A?pwd=ipvl 
 提取码：ipvl
-万望大家理解，感谢陪伴
+
 
 ## 使用声明：
 1. 禁止一切倒卖我们代码的行为。我们承诺已开源代码永久性免费开源，公开可得
